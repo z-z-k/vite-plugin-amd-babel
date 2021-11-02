@@ -1,37 +1,60 @@
 # vite-plugin-amd-babel
 
 #### 介绍
-让你在使用vite+vue2的时候兼容到ie9。
+
+让你在使用 vite + vue2 的时候兼容到 ie9。 
+
+[@vitejs/plugin-legacy](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) 只能兼容到ie11,还会打包两份代码,
+
+使用`vite-plugin-amd-babel`就只会打包一份代码,代价是增加了require.js
 
 #### 软件架构
-软件架构说明
 
-
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
+vite 不兼容低版本浏览器的原因是打包格式为 es
+将输出的类型改为 amd 再用 [babel](https://github.com/rollup/plugins/tree/master/packages/babel) 转换一下就轻松兼容到 ie9 了(vue3 就不要想了)  
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+> 参考./example 
 
-#### 参与贡献
+1. 安装`vite-plugin-amd-babel`  ,`@babel/preset-env`
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+2. vite.config.js
 
+   ```js
+   import { createVuePlugin } from 'vite-plugin-vue2'
+   import amdBabel from 'vite-plugin-amd-babel';
+   export default {
+     plugins: [createVuePlugin(), amdBabel(
+       // {
+       //   requirejs: "/js/require.min.js"//从cdn下载下来放到public
+       // }
+     )]
+   }
+   ```
 
-#### 特技
+3. babel.config.js
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+   ```js
+   module.exports = function (api) {
+       api.cache(true);
+       const presets = [
+           ['@babel/preset-env', {
+               'targets': [
+                   'last 2 version',
+                   'ie >= 9'
+               ],
+               modules: false
+           }]
+       ];
+       const plugins = [
+       ];
+       return {
+           presets,
+           plugins
+       };
+   };
+   ```
+#### 参考代码
+
+[linsk1998/vite-plugin-amd](https://github.com/linsk1998/vite-plugin-amd)
